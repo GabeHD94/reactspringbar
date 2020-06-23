@@ -1,17 +1,27 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import { render } from 'react-dom'
+import React, { useState } from 'react'
+import { useSpring, animated } from 'react-spring'
+import useMeasure from './useMeasures'
+import './styles.css'
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+function App() {
+  const [open, toggle] = useState(false)
+  const [bind, { width }] = useMeasure()
+  const props = useSpring({
+    width: open ? width : 0,
+    backgroundColor: open ? 'rgb(50, 253, 158)' : 'rgb(247, 81, 81)',
+    config: { duration: 2000 }
+  })
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+  return (
+    <div {...bind} class="main" onClick={() => toggle(!open)}>
+    <h1>"My health bar"</h1>
+      <animated.div class="fill" style={props} />
+      <animated.div class="content">
+        {props.width.interpolate(x => Math.floor((x.toFixed(0) * 100) / width))}
+      </animated.div>
+    </div>
+  )
+}
+
+render(<App />, document.getElementById('root'))
